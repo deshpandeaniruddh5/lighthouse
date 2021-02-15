@@ -1,0 +1,13 @@
+.score-container{
+    position: relative;
+    height: 150px;
+    width: 150px;
+}
+.title{
+    text-align: center;
+}
+.scores{
+    position: absolute;
+    left: 60px;
+    top: 60px;
+}
