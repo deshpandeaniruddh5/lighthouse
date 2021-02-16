@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchData } from "./features/dataSlice";
-import './App.css'
 import {Lighthoseoverview} from "./features/lighouseoverview";
 function App(){
   const dispatch = useDispatch();
@@ -15,9 +14,7 @@ function App(){
   },[dataStatus, dispatch]);
   if(dataStatus === "succeeded"){
     return(
-      <div className="grid">
-        <Lighthoseoverview categories={data.categories}/>
-      </div>
+      <Lighthoseoverview categories={data.categories}/>
     );
   }
   return (
