@@ -7,7 +7,7 @@ const initialState = {
 };
 
 export const fetchData  = createAsyncThunk("data/fetchData",async()=>{
-    const response = await fetch('http://localhost:8001/');
+    const response = await fetch('http://localhost:8000/');
     const result= await response.json();
     return result;
 })
