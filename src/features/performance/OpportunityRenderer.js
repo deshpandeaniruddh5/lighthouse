@@ -1,5 +1,6 @@
 
 import React from "react"
+import DetailsRenderer from "./details-renderer"
 function selectClass(score){
     score=parseFloat(score);
     if(score < 0.5) return "lh-audit lh-audit--load-opportunity lh-audit--numeric lh-audit--fail"
@@ -34,18 +35,44 @@ function getClassName(valueType){
     }
     else return null;
 }
-function renderTableRow(item,headings){
-    
-    return headings.map((heading)=>(
-        <td class={getClassName(heading.valueType)}>{item[heading.key]}</td>
-    ))
+const rowrender=(item,details)=>{
+  const headings=_getCanonicalizedHeadingsFromTable(details);
+  
+  return (
+      headings.map((heading)=>{
+          if (!heading || !heading.key) {
+              return <td className="lh-table-column--empty"></td>
+          }
+          else{
+              const value = item[heading.key];
+              let valueElement;
+              if (value !== undefined && value !== null) {
+                console.log(value)
+              valueElement = DetailsRenderer._renderTableValue(value, heading)
+              }
+              if (valueElement) {
+                  const classes = `lh-table-column--${heading.valueType}`;
+                  return (<td className={classes}>
+                      {valueElement}
+                  </td>)
+                } else {
+
+                  return(<td className="lh-table-column--empty"></td>)
+                }
+          }
+      })
+  )
 }
-function renderTableBody(items,headings){
-    return items.map((item)=>(
-        <tr class="lh-row-odd">
-            {renderTableRow(item, headings)}
-        </tr>
-    ))
+const tablerender=(details)=>{
+  if(!details.items){
+      return (null);
+  }
+  if (details.items.length===0){
+      return (null);
+  }
+  return (details.items.map((item)=>(
+      <tr>{rowrender(item,details)}</tr>
+  )))
 }
 function _getCanonicalizedHeadingsFromTable(tableLike) {
     if (tableLike.type === 'opportunity') {
@@ -124,7 +151,7 @@ export const OpportunityRenderer = (props)=>{
         </summary>
         <table class="lh-table lh-details">
             <thead><tr>{renderTableHeader(opportunity.result.details)}</tr></thead>
-            <tbody>{renderTableBody(opportunity.result.details.items,opportunity.result.details.headings)}</tbody>
+            <tbody>{tablerender(opportunity.result.details)}</tbody>
             <tbody></tbody>
         </table>    
         </details>

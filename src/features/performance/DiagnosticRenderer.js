@@ -1,3 +1,5 @@
+import DetailsRenderer from "./details-renderer"
+import Util from "./utils"
 import React from "react"
 function _getCanonicalizedHeadingsFromTable(tableLike) {
     if (tableLike===undefined) return null;
@@ -42,23 +44,38 @@ function _getCanonicalizedsubItemsHeading(subItemsHeading, parentHeading) {
       displayUnit: subItemsHeading.displayUnit || parentHeading.displayUnit,
     };
 }    
+function getValueType(heading){
+  const valueType = heading.valueType || 'text';
+  const classes = `lh-table-column--${valueType}`;
+  return classes;
+}
+function renderTableHeader(details){
+  if(details.type!== "table"){
+    return null}
+  const headings = _getCanonicalizedHeadingsFromTable(details);
+  return headings.map((heading)=>(
+      <th class={getValueType(heading)}><div class="lh-text">{heading.label}</div></th>
+  ))
 
+}
 const rowrender=(item,details)=>{
+    const headings=_getCanonicalizedHeadingsFromTable(details);
     if(details.type!== "table"){
-    return(<td></td>)}
+    return null}
     return (
-        details.headings.map((heading)=>{
+        headings.map((heading)=>{
             if (!heading || !heading.key) {
                 return <td className="lh-table-column--empty"></td>
             }
             else{
                 const value = item[heading.key];
                 let valueElement;
-                if (value !== undefined && value !== null && typeof(value)!=="object") {
-                valueElement =value
+                if (value !== undefined && value !== null) {
+                  console.log(value)
+                valueElement = DetailsRenderer._renderTableValue(value, heading)
                 }
                 if (valueElement) {
-                    const classes = `lh-table-column--${heading.itemType}`;
+                    const classes = `lh-table-column--${heading.valueType}`;
                     return (<td className={classes}>
                         {valueElement}
                     </td>)
@@ -81,10 +98,18 @@ const tablerender=(details)=>{
         <tr>{rowrender(item,details)}</tr>
     )))
 }
+const _setRatingClass=(score, scoreDisplayMode)=>{
+  const rating = Util.calculateRating(score, scoreDisplayMode);
+  let Class = 'lh-audit'+` lh-audit--${scoreDisplayMode.toLowerCase()}`;
+  if(scoreDisplayMode !== 'informative'){
+    Class=Class+` lh-audit--${rating}`
+  }
+  return Class
+}
 export const DiagnosticRenderer=(props) =>{
     
     const Diagnosticloader= props.diagnosticAudits.map((diagnostic)=>(
-        <div class="lh-audit lh-audit--binary lh-audit--fail" id={diagnostic.result.id}>
+        <div class={_setRatingClass(diagnostic.result.score,diagnostic.result.scoreDisplayMode)} id={diagnostic.result.id}>
         <details class="lh-expandable-details" open="">
         <summary>
         <div class="lh-audit__header lh-expandable-details__summary">
@@ -103,6 +128,8 @@ export const DiagnosticRenderer=(props) =>{
         </summary>
         <div class="lh-audit__description"><span>{diagnostic.result.description}</span></div>
         <table class="lh-table lh-details">
+
+        <thead><tr>{renderTableHeader(diagnostic.result.details)}</tr></thead>
             <tbody>{tablerender(diagnostic.result.details)}</tbody>
             
         </table>    

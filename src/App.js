@@ -4,8 +4,7 @@ import { fetchData } from "./features/dataSlice";
 import './App.css'
 import {Lighthoseoverview} from "./features/lighouseoverview";
 import {PerformanceRender} from "./features/performance/PerformanceRender";
-import ReportViewer from 'react-lighthouse-viewer';
-import { DiagnosticRenderer } from "./features/performance/DiagnosticRenderer";
+
 function App(){
   const dispatch = useDispatch();
   const data = useSelector((state)=> state.data.lighthouseData);
@@ -19,6 +18,7 @@ function App(){
   if(dataStatus === "succeeded"){
     return(
       <React.Fragment>
+        <Lighthoseoverview categories={data.categories}/>
         <PerformanceRender/>
       </React.Fragment>
       

@@ -3,9 +3,10 @@ import "./performance.css"
 import {useSelector} from "react-redux"
 import {PerformanceHeader} from "./performanceHeader"
 import {MetricsRenderer} from "./MetricsRenderer"
-import {OpportunityRenderer} from "./OpportunityRenderer";
-import {DiagnosticRenderer} from "./DiagnosticRenderer";
-
+import {OpportunityRenderer} from "./OpportunityRenderer"
+import {DiagnosticRenderer} from "./DiagnosticRenderer"
+import Util from "./utils"
+import I18n from "./i18n"
 function showAsPassed(audit){
     switch (audit.scoreDisplayMode) {
       case 'manual':
@@ -41,6 +42,13 @@ function metricsgen(data){
 }  
 export const PerformanceRender = (props)=>{
     const data = useSelector((state)=>state.data.lighthouseData);
+    const report = Util.prepareReportResult(data);
+    const i18n = new I18n(report.configSettings.locale, {
+      ...Util.UIStrings,
+      ...report.i18n.rendererFormattedStrings,
+    });
+    Util.i18n = i18n;
+    Util.reportJson = report; 
     //Cloning data into another variable and modifying the data
     const clone = (JSON.parse(JSON.stringify(data)));
     for (const category of Object.values(clone.categories)) {
@@ -99,7 +107,7 @@ export const PerformanceRender = (props)=>{
         <PerformanceHeader category={data.categories.performance}/>
         <MetricsRenderer metrics={metrics}/>
         <OpportunityRenderer opportunityAudits={opportunityAudits} scale={scale}/>
-        <DiagnosticRenderer diagnosticAudits={diagnosticAudits}/>
+        <DiagnosticRenderer diagnosticAudits={diagnosticAudits} />
         </div>
         </div>
         </div>
