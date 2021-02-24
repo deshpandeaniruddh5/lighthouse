@@ -1,12 +1,85 @@
 import React from "react"
 import "./performance.css"
 import {useSelector} from "react-redux"
-import {PerformanceHeader} from "./performanceHeader"
+import {CategoryHeader} from "./CategoryHeader"
 import {MetricsRenderer} from "./MetricsRenderer"
 import {OpportunityRenderer} from "./OpportunityRenderer"
 import {DiagnosticRenderer} from "./DiagnosticRenderer"
 import Util from "./utils"
 import I18n from "./i18n"
+const _setRatingClass=(score, scoreDisplayMode)=>{
+  const rating = Util.calculateRating(score, scoreDisplayMode);
+  let Class = 'lh-audit'+` lh-audit--${scoreDisplayMode.toLowerCase()}`;
+  if(scoreDisplayMode !== 'informative'){
+    Class=Class+` lh-audit--${rating}`
+  }
+  return Class
+}
+const renderAudit = (audit)=>{
+  return(
+          <div class={_setRatingClass(audit.result.score,audit.result.scoreDisplayMode)} id={audit.result.id}>
+          <details class="lh-expandable-details" open="">
+          <summary>
+          <div class="lh-audit__header lh-expandable-details__summary">
+            <span class="lh-audit__score-icon"></span>
+            <span class="lh-audit__title-and-text">
+              <span class="lh-audit__title"><span>{convertMarkdownCodeSnippets(audit.result.title)}</span></span>
+              <span class="lh-audit__display-text">{audit.result.displayValue}</span>
+            </span>
+            <div class="lh-chevron-container"><svg class="lh-chevron" title="See audits" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+              <g class="lh-chevron__lines">
+              <path class="lh-chevron__line lh-chevron__line-left" d="M10 50h40"></path>
+              <path class="lh-chevron__line lh-chevron__line-right" d="M90 50H50"></path>
+              </g>
+            </svg></div>
+          </div>
+          </summary>
+          <div class="lh-audit__description"><span>{convertMarkdownLinkSnippets(audit.result.description)}</span></div>
+          </details>
+          </div>
+  )
+}
+function convertMarkdownCodeSnippets(markdownText) {
+  const arr=[];
+  for (const segment of Util.splitMarkdownCodeSpans(markdownText)) {
+    if (segment.isCode) {
+      arr.push(
+          <code>{segment.text}</code>
+      )
+    } else {
+      arr.push(segment.text)
+    }
+  }
+
+  return arr;
+} 
+function convertMarkdownLinkSnippets(text) {
+  if(!text) return null;
+  const arr=[]
+  for (const segment of Util.splitMarkdownLink(text)) {
+    if (!segment.isLink) {
+      // Plain text segment.
+      arr.push(
+          segment.text
+      )
+      continue;
+    }
+
+    // Otherwise, append any links found.
+    const url = new URL(segment.linkHref);
+
+    const DOCS_ORIGINS = ['https://developers.google.com', 'https://web.dev'];
+    if (DOCS_ORIGINS.includes(url.origin)) {
+      url.searchParams.set('utm_source', 'lighthouse');
+      url.searchParams.set('utm_medium', 'unknown');
+    }
+    arr.push(
+        <a rel='noopener' target="_blank" href={url.href}>{segment.text}</a>
+    )
+  }
+
+  return arr ;
+}
 function showAsPassed(audit){
     switch (audit.scoreDisplayMode) {
       case 'manual':
@@ -42,14 +115,6 @@ function metricsgen(data){
 }  
 export const PerformanceRender = (props)=>{
     const data = useSelector((state)=>state.data.lighthouseData);
-    const report = Util.prepareReportResult(data);
-    const i18n = new I18n(report.configSettings.locale, {
-      ...Util.UIStrings,
-      ...report.i18n.rendererFormattedStrings,
-    });
-    Util.i18n = i18n;
-    Util.reportJson = report; 
-    //Cloning data into another variable and modifying the data
     const clone = (JSON.parse(JSON.stringify(data)));
     for (const category of Object.values(clone.categories)) {
         category.auditRefs.forEach((auditRef) => {
@@ -96,24 +161,38 @@ export const PerformanceRender = (props)=>{
         return scoreA - scoreB;
       });
     console.log(diagnosticAudits)
+    //Passed Audits
+    const passedAudits = performanceCategory.filter(
+      (audit) =>
+        (audit.group === 'load-opportunities' ||
+          audit.group === 'diagnostics') &&
+          showAsPassed(audit.result)
+    );
+    const renderedAudits=passedAudits.map((audit)=>renderAudit(audit))
     return(
         <React.Fragment>
-        <div class="lh-container lh-root lh-vars lh-screenshot-overlay--enabled lh-narrow">  
-        <div class="lh-container">
-        <div class="lh-report">       
-        <div class="lh-categories">
+        
         <div class="lh-category-wrapper">
         <div class="lh-category">
-        <PerformanceHeader category={data.categories.performance}/>
+        <CategoryHeader category={data.categories.performance}/>
         <MetricsRenderer metrics={metrics}/>
         <OpportunityRenderer opportunityAudits={opportunityAudits} scale={scale}/>
         <DiagnosticRenderer diagnosticAudits={diagnosticAudits} />
+        
+        <details className="lh-clump lh-audit-group lh-clump--passed" open="">
+            <summary>   
+            <div className="lh-audit-group__summary">    
+            <div class="lh-audit-group__header">
+            <span class="lh-audit-group__title">Passed audits</span>
+            <span class="lh-audit-group__itemcount">({passedAudits.length})</span>
+            </div>
+            </div>
+            </summary>
+            {renderedAudits}
+          </details>
         </div>
         </div>
-        </div>
-        </div>
-        </div>
-        </div>  
+          
         </React.Fragment>
     );
 } 

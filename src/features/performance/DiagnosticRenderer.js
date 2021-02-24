@@ -88,6 +88,7 @@ const rowrender=(item,details)=>{
     )
 }
 const tablerender=(details)=>{
+    if(details.type!=='table') return null
     if(!details.items){
         return (null);
     }
@@ -116,7 +117,7 @@ export const DiagnosticRenderer=(props) =>{
           <span class="lh-audit__score-icon"></span>
           <span class="lh-audit__title-and-text">
             <span class="lh-audit__title"><span>{diagnostic.result.title}</span></span>
-            <span class="lh-audit__display-text"></span>
+            <span class="lh-audit__display-text">{diagnostic.result.displayValue}</span>
           </span>
           <div class="lh-chevron-container"><svg class="lh-chevron" title="See audits" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
             <g class="lh-chevron__lines">

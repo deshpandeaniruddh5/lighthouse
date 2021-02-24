@@ -149,14 +149,6 @@ class DetailsRenderer {
     )
   }
 
-  /**
-   * Render a details item value for embedding in a table. Renders the value
-   * based on the heading's valueType, unless the value itself has a `type`
-   * property to override it.
-   * @param {LH.Audit.Details.ItemValue} value
-   * @param {LH.Audit.Details.OpportunityColumnHeading} heading
-   * @return {Element|null}
-   */
   static _renderTableValue(value, heading) {
     if (value === undefined || value === null) {
       return null;
@@ -252,7 +244,7 @@ class DetailsRenderer {
     }
 
     return tableLike.headings.map((heading) =>
-      this._getCanonicalizedHeading(heading)
+      DetailsRenderer._getCanonicalizedHeading(heading)
     );
   }
 
@@ -266,7 +258,7 @@ class DetailsRenderer {
   static _getCanonicalizedHeading(heading) {
     let subItemsHeading;
     if (heading.subItemsHeading) {
-      subItemsHeading = this._getCanonicalizedsubItemsHeading(
+      subItemsHeading = DetailsRenderer._getCanonicalizedsubItemsHeading(
         heading.subItemsHeading,
         heading
       );
@@ -402,7 +394,7 @@ class DetailsRenderer {
    * 
    */
   
-  renderSourceLocation(item) {
+  static renderSourceLocation(item) {
     if (!item.url) {
       return(<div></div>)
     }
