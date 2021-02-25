@@ -14,114 +14,13 @@ function generateStyle(details,scale){
     const sparklineWidthPct = `${(details.overallSavingsMs / scale) * 100}%`;
     return {width:sparklineWidthPct};
 }
-function getValueType(heading){
-    const valueType = heading.valueType || 'text';
-    const classes = `lh-table-column--${valueType}`;
-    return classes;
-}
-function renderTableHeader(details){
-    const headings = _getCanonicalizedHeadingsFromTable(details);
-    return headings.map((heading)=>(
-        <th class={getValueType(heading)}><div class="lh-text">{heading.label}</div></th>
-    ))
 
-}
-function getClassName(valueType){
-    if(valueType==="url"){
-        return "lh-table-column--url";
-    }
-    else if(valueType==="bytes"){
-        return "lh-table-column--bytes";
-    }
-    else return null;
-}
-const rowrender=(item,details)=>{
-  const headings=_getCanonicalizedHeadingsFromTable(details);
-  
-  return (
-      headings.map((heading)=>{
-          if (!heading || !heading.key) {
-              return <td className="lh-table-column--empty"></td>
-          }
-          else{
-              const value = item[heading.key];
-              let valueElement;
-              if (value !== undefined && value !== null) {
-                console.log(value)
-              valueElement = DetailsRenderer._renderTableValue(value, heading)
-              }
-              if (valueElement) {
-                  const classes = `lh-table-column--${heading.valueType}`;
-                  return (<td className={classes}>
-                      {valueElement}
-                  </td>)
-                } else {
-
-                  return(<td className="lh-table-column--empty"></td>)
-                }
-          }
-      })
-  )
-}
-const tablerender=(details)=>{
-  if(!details.items){
-      return (null);
-  }
-  if (details.items.length===0){
-      return (null);
-  }
-  return (details.items.map((item)=>(
-      <tr>{rowrender(item,details)}</tr>
-  )))
-}
-function _getCanonicalizedHeadingsFromTable(tableLike) {
-    if (tableLike.type === 'opportunity') {
-      return tableLike.headings;
-    }
-
-    return tableLike.headings.map((heading) =>
-      _getCanonicalizedHeading(heading)
-    );
-}
-function _getCanonicalizedHeading(heading) {
-    let subItemsHeading;
-    if (heading.subItemsHeading) {
-      subItemsHeading = _getCanonicalizedsubItemsHeading(
-        heading.subItemsHeading,
-        heading
-      );
-    }
-
-    return {
-      key: heading.key,
-      valueType: heading.itemType,
-      subItemsHeading,
-      label: heading.text,
-      displayUnit: heading.displayUnit,
-      granularity: heading.granularity,
-    };
-}
-function _getCanonicalizedsubItemsHeading(subItemsHeading, parentHeading) {
-    // Low-friction way to prevent commiting a falsy key (which is never allowed for
-    // a subItemsHeading) from passing in CI.
-    if (!subItemsHeading.key) {
-      // eslint-disable-next-line no-console
-      console.warn('key should not be null');
-    }
-
-    return {
-      key: subItemsHeading.key || '',
-      valueType: subItemsHeading.itemType || parentHeading.itemType,
-      granularity: subItemsHeading.granularity || parentHeading.granularity,
-      displayUnit: subItemsHeading.displayUnit || parentHeading.displayUnit,
-    };
-}
 
 export const OpportunityRenderer = (props)=>{
     if(!props.opportunityAudits.length)
     {
         return (
-            <div></div>
+            null
         );
     } 
     const opportunityloader = props.opportunityAudits.map((opportunity)=>(
@@ -132,7 +31,7 @@ export const OpportunityRenderer = (props)=>{
             <div class="lh-load-opportunity__cols">
               <div class="lh-load-opportunity__col lh-load-opportunity__col--one">
                 <span class="lh-audit__score-icon"></span>
-                <div class="lh-audit__title"><span>{opportunity.result.title}</span></div>
+                <div class="lh-audit__title"><span>{DetailsRenderer.convertMarkdownLinkSnippets(opportunity.result.title)}</span></div>
               </div>
               <div class="lh-load-opportunity__col lh-load-opportunity__col--two">
                 <div class="lh-load-opportunity__sparkline" title={opportunity.result.displayValue}>
@@ -146,12 +45,13 @@ export const OpportunityRenderer = (props)=>{
                 </g>
                 </svg></div>
               </div>
+              
             </div>
           </div>
         </summary>
         <table class="lh-table lh-details">
-            <thead><tr>{renderTableHeader(opportunity.result.details)}</tr></thead>
-            <tbody>{tablerender(opportunity.result.details)}</tbody>
+            <thead><tr>{DetailsRenderer.renderTableHeader(opportunity.result.details)}</tr></thead>
+            <tbody>{DetailsRenderer.tablerender(opportunity.result.details)}</tbody>
             <tbody></tbody>
         </table>    
         </details>

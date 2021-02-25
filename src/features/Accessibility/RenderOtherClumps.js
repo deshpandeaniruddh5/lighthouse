@@ -1,54 +1,8 @@
 import React from "react"
 import Util from "../performance/utils"
-const _setRatingClass=(score, scoreDisplayMode)=>{
-    const rating = Util.calculateRating(score, scoreDisplayMode);
-    let Class = 'lh-audit'+` lh-audit--${scoreDisplayMode.toLowerCase()}`;
-    if(scoreDisplayMode !== 'informative'){
-      Class=Class+` lh-audit--${rating}`
-    }
-    return Class
-  }
- function convertMarkdownCodeSnippets(markdownText) {
-    const arr=[];
-    for (const segment of Util.splitMarkdownCodeSpans(markdownText)) {
-      if (segment.isCode) {
-        arr.push(
-            <code>{segment.text}</code>
-        )
-      } else {
-        arr.push(segment.text)
-      }
-    }
+import DetailsRenderer from "../performance/details-renderer"
 
-    return arr;
-  } 
-function convertMarkdownLinkSnippets(text) {
-    if(!text) return null;
-    const arr=[]
-    for (const segment of Util.splitMarkdownLink(text)) {
-      if (!segment.isLink) {
-        // Plain text segment.
-        arr.push(
-            segment.text
-        )
-        continue;
-      }
 
-      // Otherwise, append any links found.
-      const url = new URL(segment.linkHref);
-
-      const DOCS_ORIGINS = ['https://developers.google.com', 'https://web.dev'];
-      if (DOCS_ORIGINS.includes(url.origin)) {
-        url.searchParams.set('utm_source', 'lighthouse');
-        url.searchParams.set('utm_medium', 'unknown');
-      }
-      arr.push(
-          <a rel='noopener' target="_blank" href={url.href}>{segment.text}</a>
-      )
-    }
-
-    return arr ;
-  }
 function _clumpTitles(clumpId) {
     switch(clumpId){
         case 'warning': 
@@ -63,13 +17,13 @@ function _clumpTitles(clumpId) {
   }
   const renderAudit = (audit)=>{
     return(
-            <div class={_setRatingClass(audit.result.score,audit.result.scoreDisplayMode)} id={audit.result.id}>
+            <div class={Util._setRatingClass(audit.result.score,audit.result.scoreDisplayMode)} id={audit.result.id}>
             <details class="lh-expandable-details" open="">
             <summary>
             <div class="lh-audit__header lh-expandable-details__summary">
               <span class="lh-audit__score-icon"></span>
               <span class="lh-audit__title-and-text">
-                <span class="lh-audit__title"><span>{convertMarkdownCodeSnippets(audit.result.title)}</span></span>
+                <span class="lh-audit__title"><span>{DetailsRenderer.convertMarkdownCodeSnippets(audit.result.title)}</span></span>
                 <span class="lh-audit__display-text">{audit.result.displayValue}</span>
               </span>
               <div class="lh-chevron-container"><svg class="lh-chevron" title="See audits" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
@@ -80,10 +34,22 @@ function _clumpTitles(clumpId) {
               </svg></div>
             </div>
             </summary>
-            <div class="lh-audit__description"><span>{convertMarkdownLinkSnippets(audit.result.description)}</span></div>
+            <div class="lh-audit__description"><span>{DetailsRenderer.convertMarkdownLinkSnippets(audit.result.description)}</span></div>
+            <table class="lh-table lh-details">
+
+            <thead><tr>{DetailsRenderer.renderTableHeader(audit.result.details)}</tr></thead>
+            <tbody>{DetailsRenderer.tablerender(audit.result.details)}</tbody>
+            
+            </table>
             </details>
             </div>
     )
+}
+const renderDescription = (description,clumpId) =>{
+  if(clumpId!=='manual') return null;
+  return(
+    <span class="lh-audit-group__description">{DetailsRenderer.convertMarkdownLinkSnippets(description)}</span>
+  )
 }
 const renderGroupAudits = (clumps,description)=>{
     const auditsGroups = []
@@ -98,7 +64,7 @@ const renderGroupAudits = (clumps,description)=>{
             <div class="lh-audit-group__header">
             <span class="lh-audit-group__title">{title}</span>
             <span class="lh-audit-group__itemcount">({groupAuditRefs.length})</span>
-            <span class="lh-audit-group__description">{convertMarkdownLinkSnippets(clumpId==='manual' ? description: undefined )}</span>
+            {renderDescription(description,clumpId)}
             </div>
             </div>
             </summary>

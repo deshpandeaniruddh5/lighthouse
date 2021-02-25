@@ -6,24 +6,16 @@ import {MetricsRenderer} from "./MetricsRenderer"
 import {OpportunityRenderer} from "./OpportunityRenderer"
 import {DiagnosticRenderer} from "./DiagnosticRenderer"
 import Util from "./utils"
-import I18n from "./i18n"
-const _setRatingClass=(score, scoreDisplayMode)=>{
-  const rating = Util.calculateRating(score, scoreDisplayMode);
-  let Class = 'lh-audit'+` lh-audit--${scoreDisplayMode.toLowerCase()}`;
-  if(scoreDisplayMode !== 'informative'){
-    Class=Class+` lh-audit--${rating}`
-  }
-  return Class
-}
+import DetailsRenderer from "./details-renderer"
 const renderAudit = (audit)=>{
   return(
-          <div class={_setRatingClass(audit.result.score,audit.result.scoreDisplayMode)} id={audit.result.id}>
+          <div class={Util._setRatingClass(audit.result.score,audit.result.scoreDisplayMode)} id={audit.result.id}>
           <details class="lh-expandable-details" open="">
           <summary>
           <div class="lh-audit__header lh-expandable-details__summary">
             <span class="lh-audit__score-icon"></span>
             <span class="lh-audit__title-and-text">
-              <span class="lh-audit__title"><span>{convertMarkdownCodeSnippets(audit.result.title)}</span></span>
+              <span class="lh-audit__title"><span>{DetailsRenderer.convertMarkdownCodeSnippets(audit.result.title)}</span></span>
               <span class="lh-audit__display-text">{audit.result.displayValue}</span>
             </span>
             <div class="lh-chevron-container"><svg class="lh-chevron" title="See audits" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
@@ -34,66 +26,18 @@ const renderAudit = (audit)=>{
             </svg></div>
           </div>
           </summary>
-          <div class="lh-audit__description"><span>{convertMarkdownLinkSnippets(audit.result.description)}</span></div>
+          <div class="lh-audit__description"><span>{DetailsRenderer.convertMarkdownLinkSnippets(audit.result.description)}</span></div>
+          <table class="lh-table lh-details">
+
+            <thead><tr>{DetailsRenderer.renderTableHeader(audit.result.details)}</tr></thead>
+            <tbody>{DetailsRenderer.tablerender(audit.result.details)}</tbody>
+            
+            </table>
           </details>
           </div>
   )
 }
-function convertMarkdownCodeSnippets(markdownText) {
-  const arr=[];
-  for (const segment of Util.splitMarkdownCodeSpans(markdownText)) {
-    if (segment.isCode) {
-      arr.push(
-          <code>{segment.text}</code>
-      )
-    } else {
-      arr.push(segment.text)
-    }
-  }
 
-  return arr;
-} 
-function convertMarkdownLinkSnippets(text) {
-  if(!text) return null;
-  const arr=[]
-  for (const segment of Util.splitMarkdownLink(text)) {
-    if (!segment.isLink) {
-      // Plain text segment.
-      arr.push(
-          segment.text
-      )
-      continue;
-    }
-
-    // Otherwise, append any links found.
-    const url = new URL(segment.linkHref);
-
-    const DOCS_ORIGINS = ['https://developers.google.com', 'https://web.dev'];
-    if (DOCS_ORIGINS.includes(url.origin)) {
-      url.searchParams.set('utm_source', 'lighthouse');
-      url.searchParams.set('utm_medium', 'unknown');
-    }
-    arr.push(
-        <a rel='noopener' target="_blank" href={url.href}>{segment.text}</a>
-    )
-  }
-
-  return arr ;
-}
-function showAsPassed(audit){
-    switch (audit.scoreDisplayMode) {
-      case 'manual':
-      case 'notApplicable':
-        return true;
-      case 'error':
-      case 'informative':
-        return false;
-      case 'numeric':
-      case 'binary':
-      default:
-        return Number(audit.score) >= 0.9 ;
-    }
-  }
 function _getWastedMs(audit){
     if (audit.result.details && audit.result.details.type === 'opportunity') {
       const details = audit.result.details;
@@ -129,12 +73,12 @@ export const PerformanceRender = (props)=>{
     // Opportunity data
     let opportunityAudits = performanceCategory.filter(
         (audit) =>
-          audit.group === 'load-opportunities' && !showAsPassed(audit.result)
+          audit.group === 'load-opportunities' && !Util.showAsPassed(audit.result)
       ).sort(
         (auditA, auditB) =>
           _getWastedMs(auditB) -_getWastedMs(auditA)
       );
-    console.log(performanceCategory);
+      
     let scale=null;
     if (opportunityAudits.length) {
         const minimumScale = 2000;
@@ -148,7 +92,7 @@ export const PerformanceRender = (props)=>{
     console.log(performanceCategory.filter((audit)=>audit.group==="diagnostics"))
     const diagnosticAudits = performanceCategory.filter(
         (audit) =>
-          audit.group === 'diagnostics' && !showAsPassed(audit.result)
+          audit.group === 'diagnostics' && !Util.showAsPassed(audit.result)
       ).sort((a, b) => {
         const scoreA =
           a.result.scoreDisplayMode === 'informative'
@@ -160,13 +104,12 @@ export const PerformanceRender = (props)=>{
             : Number(b.result.score);
         return scoreA - scoreB;
       });
-    console.log(diagnosticAudits)
     //Passed Audits
     const passedAudits = performanceCategory.filter(
       (audit) =>
         (audit.group === 'load-opportunities' ||
           audit.group === 'diagnostics') &&
-          showAsPassed(audit.result)
+          Util.showAsPassed(audit.result)
     );
     const renderedAudits=passedAudits.map((audit)=>renderAudit(audit))
     return(

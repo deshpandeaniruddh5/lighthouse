@@ -11,7 +11,47 @@ const URL_PREFIXES = ['http://', 'https://', 'data:'];
 
 class DetailsRenderer {
 
-  
+  static convertMarkdownCodeSnippets(markdownText) {
+    const arr=[];
+    for (const segment of Util.splitMarkdownCodeSpans(markdownText)) {
+      if (segment.isCode) {
+        arr.push(
+            <code>{segment.text}</code>
+        )
+      } else {
+        arr.push(segment.text)
+      }
+    }
+
+    return arr;
+  } 
+static convertMarkdownLinkSnippets(text) {
+    if(!text) return null;
+    const arr=[]
+    for (const segment of Util.splitMarkdownLink(text)) {
+      if (!segment.isLink) {
+        // Plain text segment.
+        arr.push(
+            segment.text
+        )
+        continue;
+      }
+
+      // Otherwise, append any links found.
+      const url = new URL(segment.linkHref);
+
+      const DOCS_ORIGINS = ['https://developers.google.com', 'https://web.dev'];
+      if (DOCS_ORIGINS.includes(url.origin)) {
+        url.searchParams.set('utm_source', 'lighthouse');
+        url.searchParams.set('utm_medium', 'unknown');
+      }
+      arr.push(
+          <a rel='noopener' target="_blank" href={url.href}>{segment.text}</a>
+      )
+    }
+
+    return arr ;
+  }
   static _renderBytes(details) {
     // TODO: handle displayUnit once we have something other than 'kb'
     // Note that 'kb' is historical and actually represents KiB.
@@ -311,6 +351,59 @@ class DetailsRenderer {
       displayUnit: heading.subItemsHeading.displayUnit || heading.displayUnit,
       label: '',
     };
+  }
+  static renderTableHeader(details){
+    if(!details) return null;
+    
+    if(details.type!== "table" && details.type !== "opportunity"){
+      console.log(details.type)
+      return null}
+    const headings = DetailsRenderer._getCanonicalizedHeadingsFromTable(details);
+    return headings.map((heading)=>(
+        <th class={Util.getValueType(heading)}><div class="lh-text">{heading.label}</div></th>
+    ))
+  
+  }
+  static rowrender=(item,details)=>{
+  
+      const headings=DetailsRenderer._getCanonicalizedHeadingsFromTable(details);
+      
+      return (
+          headings.map((heading)=>{
+              if (!heading || !heading.key) {
+                  return <td className="lh-table-column--empty"></td>
+              }
+              else{
+                  const value = item[heading.key];
+                  let valueElement;
+                  if (value !== undefined && value !== null) {
+                  valueElement = DetailsRenderer._renderTableValue(value, heading)
+                  }
+                  if (valueElement) {
+                      const classes = `lh-table-column--${heading.valueType}`;
+                      return (<td className={classes}>
+                          {valueElement}
+                      </td>)
+                    } else {
+  
+                      return(<td className="lh-table-column--empty"></td>)
+                    }
+              }
+          })
+      )
+  }
+  static tablerender=(details)=>{
+    if(!details) return null;
+      if(details.type!=='table' && details.type !="opportunity") return null
+      if(!details.items){
+          return (null);
+      }
+      if (details.items.length===0){
+          return (null);
+      }
+      return (details.items.map((item)=>(
+          <tr>{DetailsRenderer.rowrender(item,details)}</tr>
+      )))
   }
 
   /**

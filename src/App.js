@@ -28,11 +28,13 @@ function App(){
     Util.reportJson = report; 
     return(
       <React.Fragment>
+        
         <div class="lh-container lh-root lh-vars lh-screenshot-overlay--enabled lh-narrow">  
         <div class="lh-container">
         <div class="lh-report">       
+        <Lighthoseoverview categories={data.categories}/>
         <div class="lh-categories">
-          <Lighthoseoverview categories={data.categories}/>
+          
           <PerformanceRender/>
           <AccessibilityRenderer id={data.categories.accessibility.id}/>
           <AccessibilityRenderer id={data.categories.seo.id}/>

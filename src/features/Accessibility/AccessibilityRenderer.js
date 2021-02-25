@@ -35,7 +35,6 @@ export const AccessibilityRenderer = (props)=>{
     } 
 
     const accessibilityCategory=clone.categories[props.id].auditRefs;
-    console.log(accessibilityCategory)
     const clumps = new Map();
     clumps.set('failed', []);
     clumps.set('warning', []);
@@ -43,7 +42,6 @@ export const AccessibilityRenderer = (props)=>{
     clumps.set('passed', []);
     clumps.set('notApplicable', []);
     for (const auditRef of accessibilityCategory) {
-        console.log(auditRef)
         const clumpId =_getClumpIdForAuditRef(auditRef);
         const clump = (clumps.get(clumpId)); 
         clump.push(auditRef);
@@ -51,7 +49,7 @@ export const AccessibilityRenderer = (props)=>{
     }
     const failed = clumps.get('failed'); 
     clumps.delete('failed');
-    console.log(clumps)
+    
     return (
       <React.Fragment>
       

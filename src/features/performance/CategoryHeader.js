@@ -1,34 +1,11 @@
 import React from "react"
-import Util from "./utils"
-function convertMarkdownLinkSnippets(text) {
-    const arr=[]
-    for (const segment of Util.splitMarkdownLink(text)) {
-      if (!segment.isLink) {
-        // Plain text segment.
-        arr.push(segment.text)
-        continue;
-      }
+import DetailsRenderer from "./details-renderer"
 
-      // Otherwise, append any links found.
-      const url = new URL(segment.linkHref);
-
-      const DOCS_ORIGINS = ['https://developers.google.com', 'https://web.dev'];
-      if (DOCS_ORIGINS.includes(url.origin)) {
-        url.searchParams.set('utm_source', 'lighthouse');
-        url.searchParams.set('utm_medium', 'unknown');
-      }
-      arr.push(
-          <a rel='noopener' target="_blank" href={url.href}>{segment.text}</a>
-      )
-    }
-
-    return arr ;
-  }
 function getDescription(description) {
     if(!description){
         return null;
     }
-    return convertMarkdownLinkSnippets(description)
+    return (DetailsRenderer.convertMarkdownLinkSnippets(description))
 }  
 export const CategoryHeader = (props)=>{
     const score=parseInt(parseFloat(props.category.score)*100);

@@ -71,16 +71,19 @@ class Util {
   static get MS_DISPLAY_VALUE() {
     return `%10d${NBSP}ms`;
   }
-
-  /**
-   * Returns a new LHR that's reshaped for slightly better ergonomics within the report rendereer.
-   * Also, sets up the localized UI strings used within renderer and makes changes to old LHRs to be
-   * compatible with current renderer.
-   * The LHR passed in is not mutated.
-   * TODO(team): we all agree the LHR shape change is technical debt we should fix
-   * @param {LH.Result} result
-   * @return {LH.ReportResult}
-   */
+  static getValueType(heading){
+    const valueType = heading.valueType || 'text';
+    const classes = `lh-table-column--${valueType}`;
+    return classes;
+}
+  static _setRatingClass=(score, scoreDisplayMode)=>{
+    const rating = Util.calculateRating(score, scoreDisplayMode);
+    let Class = 'lh-audit'+` lh-audit--${scoreDisplayMode.toLowerCase()}`;
+    if(scoreDisplayMode !== 'informative'){
+      Class=Class+` lh-audit--${rating}`
+    }
+    return Class
+  }
   static prepareReportResult(result) {
     // If any mutations happen to the report within the renderers, we want the original object untouched
     const clone = /** @type {LH.ReportResult} */ (JSON.parse(
