@@ -23,7 +23,7 @@ function _getClumpIdForAuditRef(auditRef) {
       return 'failed';
     }
   }
-export const AccessibilityRenderer = (props)=>{
+export const CategoryRenderer = (props)=>{
 
     const data = useSelector((state)=>state.data.lighthouseData);
     const clone = (JSON.parse(JSON.stringify(data)));
@@ -34,14 +34,14 @@ export const AccessibilityRenderer = (props)=>{
         });
     } 
 
-    const accessibilityCategory=clone.categories[props.id].auditRefs;
+    const currentCategory=clone.categories[props.id].auditRefs;
     const clumps = new Map();
     clumps.set('failed', []);
     clumps.set('warning', []);
     clumps.set('manual', []);
     clumps.set('passed', []);
     clumps.set('notApplicable', []);
-    for (const auditRef of accessibilityCategory) {
+    for (const auditRef of currentCategory) {
         const clumpId =_getClumpIdForAuditRef(auditRef);
         const clump = (clumps.get(clumpId)); 
         clump.push(auditRef);

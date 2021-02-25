@@ -4,7 +4,7 @@ import { fetchData } from "./features/dataSlice";
 import './App.css'
 import {Lighthoseoverview} from "./features/lighouseoverview";
 import {PerformanceRender} from "./features/performance/PerformanceRender";
-import {AccessibilityRenderer} from "./features/Accessibility/AccessibilityRenderer"
+import {CategoryRenderer} from "./features/Category/CategoryRenderer"
 import ReportViewer from "react-lighthouse-viewer"
 import Util from "./features/performance/utils"
 import I18n from "./features/performance/i18n"
@@ -36,9 +36,9 @@ function App(){
         <div class="lh-categories">
           
           <PerformanceRender/>
-          <AccessibilityRenderer id={data.categories.accessibility.id}/>
-          <AccessibilityRenderer id={data.categories.seo.id}/>
-          <AccessibilityRenderer id="best-practices"/>
+          <CategoryRenderer id={data.categories.accessibility.id}/>
+          <CategoryRenderer id={data.categories.seo.id}/>
+          <CategoryRenderer id="best-practices"/>
         </div>
         </div>
         </div>
