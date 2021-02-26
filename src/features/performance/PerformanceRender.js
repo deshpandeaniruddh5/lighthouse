@@ -66,6 +66,7 @@ export const PerformanceRender = (props)=>{
           auditRef.result = result;
         });
     } 
+    console.log(clone)
     const performanceCategory=clone.categories.performance.auditRefs;
     //Metrics data
     const metrics=metricsgen(data);

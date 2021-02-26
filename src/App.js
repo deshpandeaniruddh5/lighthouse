@@ -8,6 +8,7 @@ import {CategoryRenderer} from "./features/Category/CategoryRenderer"
 import ReportViewer from "react-lighthouse-viewer"
 import Util from "./features/performance/utils"
 import I18n from "./features/performance/i18n"
+import {PwaRenderer} from "./features/Pwa/PwaRenderer"
 function App(){
   const dispatch = useDispatch();
   const data = useSelector((state)=> state.data.lighthouseData);
@@ -28,7 +29,6 @@ function App(){
     Util.reportJson = report; 
     return(
       <React.Fragment>
-        
         <div class="lh-container lh-root lh-vars lh-screenshot-overlay--enabled lh-narrow">  
         <div class="lh-container">
         <div class="lh-report">       
@@ -39,6 +39,7 @@ function App(){
           <CategoryRenderer id={data.categories.accessibility.id}/>
           <CategoryRenderer id={data.categories.seo.id}/>
           <CategoryRenderer id="best-practices"/>
+          <PwaRenderer/>
         </div>
         </div>
         </div>
