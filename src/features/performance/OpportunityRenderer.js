@@ -50,6 +50,8 @@ export const OpportunityRenderer = ( props )=>{
             </div>
           </div>
         </summary>
+        <div class="lh-audit__description"><span>{DetailsRenderer.convertMarkdownLinkSnippets(opportunity.result.description)}</span></div>
+        
         <table class="lh-table lh-details">
             <thead><tr>{DetailsRenderer.renderTableHeader(opportunity.result.details)}</tr></thead>
             <tbody>{DetailsRenderer.tablerender(opportunity.result.details)}</tbody>

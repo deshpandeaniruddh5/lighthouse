@@ -12,6 +12,7 @@ class CriticalRequestChainRenderer {
 
         return { tree, startTime, transferSize: 0 }
     }
+
     static nodeValue( segment ) {
         const url = segment.node.request.url
         if( !url ) return null
@@ -33,6 +34,7 @@ class CriticalRequestChainRenderer {
             )
         }
     }
+
     static createChainNode( segment ) {
 
         const treeMarkeEl = []
@@ -109,6 +111,7 @@ class CriticalRequestChainRenderer {
             treeMarkers: newTreeMarkers,
         };
     }
+    
     static buildTree( segment, details ) {
         let arr = []
         arr.push(
