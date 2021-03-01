@@ -6,7 +6,7 @@ import {OpportunityRenderer} from "./OpportunityRenderer"
 import {DiagnosticRenderer} from "./DiagnosticRenderer"
 import Util from "./utils"
 import DetailsRenderer from "./details-renderer"
-const renderAudit = (audit)=>{
+const renderAudit = ( audit )=>{
   return(
           <div class={Util._setRatingClass(audit.result.score,audit.result.scoreDisplayMode)} id={audit.result.id}>
           <details class="lh-expandable-details" open="">
@@ -38,9 +38,9 @@ const renderAudit = (audit)=>{
 }
 
 function _getWastedMs(audit){
-    if (audit.result.details && audit.result.details.type === 'opportunity') {
+    if ( audit.result.details && audit.result.details.type === 'opportunity' ) {
       const details = audit.result.details;
-      if (typeof details.overallSavingsMs !== 'number') {
+      if ( typeof details.overallSavingsMs !== 'number' ) {
         throw new Error('non-opportunity details passed to _getWastedMs');
       }
       return details.overallSavingsMs;
@@ -89,7 +89,6 @@ export const PerformanceRender = (props)=>{
         scale = Math.max(Math.ceil(maxWaste / 1000) * 1000, minimumScale);
     }
     // Diagnostic data
-    console.log(performanceCategory.filter((audit)=>audit.group==="diagnostics"))
     const diagnosticAudits = performanceCategory.filter(
         (audit) =>
           audit.group === 'diagnostics' && !Util.showAsPassed(audit.result)
@@ -106,11 +105,7 @@ export const PerformanceRender = (props)=>{
       });
     //Passed Audits
     const passedAudits = performanceCategory.filter(
-      (audit) =>
-        (audit.group === 'load-opportunities' ||
-          audit.group === 'diagnostics') &&
-          Util.showAsPassed(audit.result)
-    );
+      (audit) => (audit.group === 'load-opportunities' || audit.group === 'diagnostics') && Util.showAsPassed(audit.result))
     const renderedAudits=passedAudits.map((audit)=>renderAudit(audit))
     return(
         <React.Fragment>
@@ -136,6 +131,6 @@ export const PerformanceRender = (props)=>{
         </div>
         </div>
           
-        </React.Fragment>
+      </React.Fragment>
     );
 } 

@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchData } from "./features/dataSlice";
+import React, { useEffect } from "react"
+import { useSelector, useDispatch } from "react-redux"
+import { fetchData } from "./features/data_slice_reducer"
 import './App.css'
-import {Lighthoseoverview} from "./features/lighouseoverview";
-import {PerformanceRender} from "./features/performance/PerformanceRender";
+import {Lighthoseoverview} from "./features/lighouseoverview"
+import {PerformanceRender} from "./features/performance/PerformanceRender"
 import {CategoryRenderer} from "./features/Category/CategoryRenderer"
 import Util from "./features/performance/utils"
 import I18n from "./features/performance/i18n"
 import {PwaRenderer} from "./features/Pwa/PwaRenderer"
+import ReportViewer from 'react-lighthouse-viewer';
 const renderList = (report) =>{
   const li= []
   const envValues = Util.getEnvironmentDisplayValues(
@@ -53,9 +54,9 @@ const renderList = (report) =>{
 }
 function App(){
   const dispatch = useDispatch();
-  const data = useSelector((state)=> state.data.lighthouseData);
+  const data = useSelector( ( state )=> state.data.lighthouseData )
   
-  const dataStatus = useSelector((state)=> state.data.status);
+  const dataStatus = useSelector( ( state ) => state.data.status )
   useEffect(()=>{
     if( dataStatus === "idle"){
       dispatch(fetchData());
@@ -72,6 +73,7 @@ function App(){
     return(
       
     <React.Fragment>
+      <ReportViewer json={data}/>
       <div class="lh-container lh-root lh-vars lh-screenshot-overlay--enabled lh-narrow">  
       <div class="lh-container">
       <div class="lh-report">       
