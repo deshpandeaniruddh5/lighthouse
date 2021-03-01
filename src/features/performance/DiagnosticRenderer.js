@@ -1,8 +1,22 @@
 import DetailsRenderer from "./details-renderer"
+import CriticalRequestChainRenderer from './crc-renderer'
 import Util from "./utils"
 import React from "react"
 
-
+const renderDetails = (details)=>{
+  switch (details.type){
+    case 'table':
+      return(
+        <table class="lh-table lh-details">
+        <thead><tr>{DetailsRenderer.renderTableHeader(details)}</tr></thead>
+        <tbody>{DetailsRenderer.tablerender(details)}</tbody>
+        </table>
+      )
+    case 'criticalrequestchain' :
+      return CriticalRequestChainRenderer.render(details) 
+    default : {return null}  
+  }
+}
 export const DiagnosticRenderer=(props) => {
     
     const Diagnosticloader= props.diagnosticAudits.map((audit)=>(
@@ -24,15 +38,11 @@ export const DiagnosticRenderer=(props) => {
         </div>
         </summary>
         <div class="lh-audit__description"><span>{DetailsRenderer.convertMarkdownLinkSnippets(audit.result.description)}</span></div>
-        <table class="lh-table lh-details">
-
-        <thead><tr>{DetailsRenderer.renderTableHeader(audit.result.details)}</tr></thead>
-            <tbody>{DetailsRenderer.tablerender(audit.result.details)}</tbody>
-            
-        </table>    
+        {renderDetails(audit.result.details)}
         </details>
         </div>
     ))
+    
     return(
         <div className="lh-audit-group lh-audit-group--diagnostics">
         <div class="lh-audit-group__header">

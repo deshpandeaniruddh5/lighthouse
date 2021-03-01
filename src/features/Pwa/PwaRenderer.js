@@ -2,7 +2,7 @@ import React from "react"
 import Util from "../performance/utils"
 import DetailsRenderer from "../performance/details-renderer"
 import {useSelector} from "react-redux"
-const _getGroupIds = (auditRefs) =>{
+const _getGroupIds = ( auditRefs ) =>{
     const groupIds = auditRefs
       .map((ref) => ref.group)
       .filter(/** @return {g is string} */ (g) => !!g);
@@ -14,7 +14,7 @@ const _getGroupIds = (auditRefs) =>{
    * @param {Array<LH.ReportResult.AuditRef>} auditRefs
    * @return {Set<string>}
    */
-const _getPassingGroupIds = (auditRefs)=>{
+const _getPassingGroupIds = ( auditRefs )=>{
     const uniqueGroupIds = _getGroupIds(auditRefs);
 
     // Remove any that have a failing audit.
@@ -26,7 +26,7 @@ const _getPassingGroupIds = (auditRefs)=>{
 
     return uniqueGroupIds;
   }
-  const renderAudit = (audit)=>{
+  const renderAudit = ( audit )=>{
     return(
       
             <div class={Util._setRatingClass(audit.result.score,audit.result.scoreDisplayMode)} id={audit.result.id}>
@@ -57,16 +57,16 @@ const _getPassingGroupIds = (auditRefs)=>{
             </div>
     )
 }
-const getClassNameForGroup = (groupId,regularAuditRefs) =>{
+const getClassNameForGroup = ( groupId,regularAuditRefs ) => {
     const passedGroups=_getPassingGroupIds(regularAuditRefs)
-    if(passedGroups.has(groupId))
+    if( passedGroups.has(groupId) )
     {
         return `lh-audit-group lh-audit-group--${groupId} lh-badged`
     }
     return `lh-audit-group lh-audit-group--${groupId}`
 
 }
-const renderGroupAudits = (grouped,groups,regularAuditRefs)=>{
+const renderGroupAudits = ( grouped,groups,regularAuditRefs )=>{
     const auditsGroups = []
     for (const [groupId, groupAuditRefs] of grouped){
         const auditsGroup=groupAuditRefs.map((audit)=>renderAudit(audit))
@@ -82,13 +82,13 @@ const renderGroupAudits = (grouped,groups,regularAuditRefs)=>{
     }
     return auditsGroups
 }
-const renderDescription = (description,clumpId) =>{
+const renderDescription = ( description,clumpId ) =>{
     if(clumpId!=='manual') return null;
     return(
       <span class="lh-audit-group__description">{DetailsRenderer.convertMarkdownLinkSnippets(description)}</span>
     )
   }
-export const PwaRenderer = (props) =>{
+export const PwaRenderer = ( props ) =>{
     const data = useSelector((state)=>state.data.lighthouseData);
     const clone = (JSON.parse(JSON.stringify(data)));
     for (const category of Object.values(clone.categories)) {

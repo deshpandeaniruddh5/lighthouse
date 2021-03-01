@@ -46,17 +46,19 @@ function _clumpTitles(clumpId) {
     )
 }
 const renderDescription = (description,clumpId) =>{
-  if(clumpId!=='manual') return null;
+  if( clumpId!=='manual' ) return null
   return(
     <span class="lh-audit-group__description">{DetailsRenderer.convertMarkdownLinkSnippets(description)}</span>
   )
 }
-const renderGroupAudits = (clumps,description)=>{
+const renderGroupAudits = ( clumps,description )=>{
     const auditsGroups = []
+
     for (const [clumpId, groupAuditRefs] of clumps){
         const renderedAudits=groupAuditRefs.map((audit)=>renderAudit(audit))
         let Class="lh-clump lh-audit-group lh-clump--"+clumpId
         const title=_clumpTitles(clumpId)
+
         auditsGroups.push(
             <details className={Class} open="">
             <summary>   
@@ -72,15 +74,18 @@ const renderGroupAudits = (clumps,description)=>{
             </details>
         )
     }
+
     return auditsGroups
 }  
 export const RenderOtherClumps = (props) =>{  
     const clumps = new Map()
+
     for(const [clumpId, groupAuditRefs] of props.clumps){
         if(groupAuditRefs.length===0){
             continue;
         }
-        clumps.set(clumpId,groupAuditRefs);
+        clumps.set(clumpId,groupAuditRefs)
     }
+    
     return (renderGroupAudits(clumps,props.description))
 }

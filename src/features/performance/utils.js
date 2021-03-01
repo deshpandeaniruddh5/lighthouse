@@ -20,10 +20,10 @@
 
 /** @typedef {import('./i18n')} I18n */
 
-const ELLIPSIS = '\u2026';
-const NBSP = '\xa0';
-const PASS_THRESHOLD = 0.9;
-const SCREENSHOT_PREFIX = 'data:image/jpeg;base64,';
+const ELLIPSIS = '\u2026'
+const NBSP = '\xa0'
+const PASS_THRESHOLD = 0.9
+const SCREENSHOT_PREFIX = 'data:image/jpeg;base64,'
 
 const RATINGS = {
   PASS: { label: 'pass', minScore: PASS_THRESHOLD },
@@ -65,20 +65,20 @@ const listOfTlds = [
 
 class Util {
   static get PASS_THRESHOLD() {
-    return PASS_THRESHOLD;
+    return PASS_THRESHOLD
   }
 
   static get MS_DISPLAY_VALUE() {
-    return `%10d${NBSP}ms`;
+    return `%10d${NBSP}ms`
   }
   static getValueType(heading){
-    const valueType = heading.valueType || 'text';
-    const classes = `lh-table-column--${valueType}`;
-    return classes;
+    const valueType = heading.valueType || 'text'
+    const classes = `lh-table-column--${valueType}`
+    return classes
 }
   static _setRatingClass=(score, scoreDisplayMode)=>{
-    const rating = Util.calculateRating(score, scoreDisplayMode);
-    let Class = 'lh-audit'+` lh-audit--${scoreDisplayMode.toLowerCase()}`;
+    const rating = Util.calculateRating(score, scoreDisplayMode)
+    let Class = 'lh-audit'+` lh-audit--${scoreDisplayMode.toLowerCase()}`
     if(scoreDisplayMode !== 'informative'){
       Class=Class+` lh-audit--${rating}`
     }
@@ -88,11 +88,11 @@ class Util {
     // If any mutations happen to the report within the renderers, we want the original object untouched
     const clone = /** @type {LH.ReportResult} */ (JSON.parse(
       JSON.stringify(result)
-    ));
+    ))
 
     // If LHR is older (≤3.0.3), it has no locale setting. Set default.
     if (!clone.configSettings.locale) {
-      clone.configSettings.locale = 'en';
+      clone.configSettings.locale = 'en'
     }
 
     for (const audit of Object.values(clone.audits)) {
@@ -122,7 +122,7 @@ class Util {
         if (audit.details.type === 'filmstrip') {
           for (const screenshot of audit.details.items) {
             if (!screenshot.data.startsWith(SCREENSHOT_PREFIX)) {
-              screenshot.data = SCREENSHOT_PREFIX + screenshot.data;
+              screenshot.data = SCREENSHOT_PREFIX + screenshot.data
             }
           }
         }
@@ -131,26 +131,26 @@ class Util {
 
     // For convenience, smoosh all AuditResults into their auditRef (which has just weight & group)
     if (typeof clone.categories !== 'object')
-      throw new Error('No categories provided.');
+      throw new Error('No categories provided.')
     for (const category of Object.values(clone.categories)) {
       category.auditRefs.forEach((auditRef) => {
-        const result = clone.audits[auditRef.id];
-        auditRef.result = result;
+        const result = clone.audits[auditRef.id]
+        auditRef.result = result
 
         // attach the stackpacks to the auditRef object
         if (clone.stackPacks) {
           clone.stackPacks.forEach((pack) => {
             if (pack.descriptions[auditRef.id]) {
-              auditRef.stackPacks = auditRef.stackPacks || [];
+              auditRef.stackPacks = auditRef.stackPacks || []
               auditRef.stackPacks.push({
                 title: pack.title,
                 iconDataURL: pack.iconDataURL,
                 description: pack.descriptions[auditRef.id],
-              });
+              })
             }
-          });
+          })
         }
-      });
+      })
     }
 
     return clone;
@@ -174,7 +174,7 @@ class Util {
       case 'numeric':
       case 'binary':
       default:
-        return Number(audit.score) >= RATINGS.PASS.minScore;
+        return Number(audit.score) >= RATINGS.PASS.minScore
     }
   }
 
@@ -187,21 +187,21 @@ class Util {
   static calculateRating(score, scoreDisplayMode) {
     // Handle edge cases first, manual and not applicable receive 'pass', errored audits receive 'error'
     if (scoreDisplayMode === 'manual' || scoreDisplayMode === 'notApplicable') {
-      return RATINGS.PASS.label;
+      return RATINGS.PASS.label
     } else if (scoreDisplayMode === 'error') {
-      return RATINGS.ERROR.label;
+      return RATINGS.ERROR.label
     } else if (score === null) {
-      return RATINGS.FAIL.label;
+      return RATINGS.FAIL.label
     }
 
     // At this point, we're rating a standard binary/numeric audit
-    let rating = RATINGS.FAIL.label;
+    let rating = RATINGS.FAIL.label
     if (score >= RATINGS.PASS.minScore) {
-      rating = RATINGS.PASS.label;
+      rating = RATINGS.PASS.label
     } else if (score >= RATINGS.AVERAGE.minScore) {
-      rating = RATINGS.AVERAGE.label;
+      rating = RATINGS.AVERAGE.label
     }
-    return rating;
+    return rating
   }
 
   /**
@@ -213,25 +213,25 @@ class Util {
    */
   static splitMarkdownCodeSpans(text) {
     /** @type {Array<{isCode: true, text: string}|{isCode: false, text: string}>} */
-    const segments = [];
+    const segments = []
 
     // Split on backticked code spans.
     const parts = text.split(/`(.*?)`/g);
     for (let i = 0; i < parts.length; i++) {
-      const text = parts[i];
+      const text = parts[i]
 
       // Empty strings are an artifact of splitting, not meaningful.
       if (!text) continue;
 
       // Alternates between plain text and code segments.
-      const isCode = i % 2 !== 0;
+      const isCode = i % 2 !== 0
       segments.push({
         isCode,
         text,
       });
     }
 
-    return segments;
+    return segments
   }
 
   /**
@@ -244,19 +244,19 @@ class Util {
    */
   static splitMarkdownLink(text) {
     /** @type {Array<{isLink: true, text: string, linkHref: string}|{isLink: false, text: string}>} */
-    const segments = [];
+    const segments = []
 
-    const parts = text.split(/\[([^\]]+?)\]\((https?:\/\/.*?)\)/g);
+    const parts = text.split(/\[([^\]]+?)\]\((https?:\/\/.*?)\)/g)
     while (parts.length) {
       // Shift off the same number of elements as the pre-split and capture groups.
-      const [preambleText, linkText, linkHref] = parts.splice(0, 3);
+      const [preambleText, linkText, linkHref] = parts.splice(0, 3)
 
       if (preambleText) {
         // Skip empty text as it's an artifact of splitting, not meaningful.
         segments.push({
           isLink: false,
           text: preambleText,
-        });
+        })
       }
 
       // Append link if there are any.
@@ -265,11 +265,11 @@ class Util {
           isLink: true,
           text: linkText,
           linkHref,
-        });
+        })
       }
     }
 
-    return segments;
+    return segments
   }
 
   /**
@@ -285,34 +285,34 @@ class Util {
       preserveHost: undefined,
     };
     const numPathParts =
-      options.numPathParts !== undefined ? options.numPathParts : 2;
+      options.numPathParts !== undefined ? options.numPathParts : 2
     const preserveQuery =
-      options.preserveQuery !== undefined ? options.preserveQuery : true;
-    const preserveHost = options.preserveHost || false;
+      options.preserveQuery !== undefined ? options.preserveQuery : true
+    const preserveHost = options.preserveHost || false
 
-    let name;
+    let name
 
     if (parsedUrl.protocol === 'about:' || parsedUrl.protocol === 'data:') {
       // Handle 'about:*' and 'data:*' URLs specially since they have no path.
-      name = parsedUrl.href;
+      name = parsedUrl.href
     } else {
-      name = parsedUrl.pathname;
-      const parts = name.split('/').filter((part) => part.length);
+      name = parsedUrl.pathname
+      const parts = name.split('/').filter((part) => part.length)
       if (numPathParts && parts.length > numPathParts) {
-        name = ELLIPSIS + parts.slice(-1 * numPathParts).join('/');
+        name = ELLIPSIS + parts.slice(-1 * numPathParts).join('/')
       }
 
       if (preserveHost) {
-        name = `${parsedUrl.host}/${name.replace(/^\//, '')}`;
+        name = `${parsedUrl.host}/${name.replace(/^\//, '')}`
       }
       if (preserveQuery) {
-        name = `${name}${parsedUrl.search}`;
+        name = `${name}${parsedUrl.search}`
       }
     }
 
     const MAX_LENGTH = 64;
     // Always elide hexadecimal hash
-    name = name.replace(/([a-f0-9]{7})[a-f0-9]{13}[a-f0-9]*/g, `$1${ELLIPSIS}`);
+    name = name.replace(/([a-f0-9]{7})[a-f0-9]{13}[a-f0-9]*/g, `$1${ELLIPSIS}`)
     // Also elide other hash-like mixed-case strings
     name = name.replace(
       /([a-zA-Z0-9-_]{9})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9-_]{10,}/g,
@@ -321,16 +321,16 @@ class Util {
     // Also elide long number sequences
     name = name.replace(/(\d{3})\d{6,}/g, `$1${ELLIPSIS}`);
     // Merge any adjacent ellipses
-    name = name.replace(/\u2026+/g, ELLIPSIS);
+    name = name.replace(/\u2026+/g, ELLIPSIS)
 
     // Elide query params first
     if (name.length > MAX_LENGTH && name.includes('?')) {
       // Try to leave the first query parameter intact
-      name = name.replace(/\?([^=]*)(=)?.*/, `?$1$2${ELLIPSIS}`);
+      name = name.replace(/\?([^=]*)(=)?.*/, `?$1$2${ELLIPSIS}`)
 
       // Remove it all if it's still too long
       if (name.length > MAX_LENGTH) {
-        name = name.replace(/\?.*/, `?${ELLIPSIS}`);
+        name = name.replace(/\?.*/, `?${ELLIPSIS}`)
       }
     }
 
@@ -341,9 +341,9 @@ class Util {
         name =
           name.slice(0, MAX_LENGTH - 1 - (name.length - dotIndex)) +
           // Show file extension
-          `${ELLIPSIS}${name.slice(dotIndex)}`;
+          `${ELLIPSIS}${name.slice(dotIndex)}`
       } else {
-        name = name.slice(0, MAX_LENGTH - 1) + ELLIPSIS;
+        name = name.slice(0, MAX_LENGTH - 1) + ELLIPSIS
       }
     }
 
@@ -361,7 +361,7 @@ class Util {
       file: Util.getURLDisplayName(parsedUrl),
       hostname: parsedUrl.hostname,
       origin: parsedUrl.origin,
-    };
+    }
   }
 
   /**
@@ -370,10 +370,10 @@ class Util {
    */
   static createOrReturnURL(value) {
     if (value instanceof URL) {
-      return value;
+      return value
     }
 
-    return new URL(value);
+    return new URL(value)
   }
 
   /**
@@ -383,13 +383,13 @@ class Util {
    * @return {string} tld
    */
   static getTld(hostname) {
-    const tlds = hostname.split('.').slice(-2);
+    const tlds = hostname.split('.').slice(-2)
 
     if (!listOfTlds.includes(tlds[0])) {
-      return `.${tlds[tlds.length - 1]}`;
+      return `.${tlds[tlds.length - 1]}`
     }
 
-    return `.${tlds.join('.')}`;
+    return `.${tlds.join('.')}`
   }
 
   /**
@@ -398,15 +398,15 @@ class Util {
    * @returns {string}
    */
   static getRootDomain(url) {
-    const hostname = Util.createOrReturnURL(url).hostname;
-    const tld = Util.getTld(hostname);
+    const hostname = Util.createOrReturnURL(url).hostname
+    const tld = Util.getTld(hostname)
 
     // tld is .com or .co.uk which means we means that length is 1 to big
     // .com => 2 & .co.uk => 3
-    const splitTld = tld.split('.');
+    const splitTld = tld.split('.')
 
     // get TLD + root domain
-    return hostname.split('.').slice(-splitTld.length).join('.');
+    return hostname.split('.').slice(-splitTld.length).join('.')
   }
 
   /**
@@ -414,7 +414,7 @@ class Util {
    * @return {!Array<{name: string, description: string}>}
    */
   static getEnvironmentDisplayValues(settings) {
-    const emulationDesc = Util.getEmulationDescriptions(settings);
+    const emulationDesc = Util.getEmulationDescriptions(settings)
 
     return [
       {
@@ -429,7 +429,7 @@ class Util {
         name: Util.i18n.strings.runtimeSettingsCPUThrottling,
         description: emulationDesc.cpuThrottling,
       },
-    ];
+    ]
   }
 
   /**
@@ -437,21 +437,21 @@ class Util {
    * @return {{deviceEmulation: string, networkThrottling: string, cpuThrottling: string}}
    */
   static getEmulationDescriptions(settings) {
-    let cpuThrottling;
-    let networkThrottling;
+    let cpuThrottling
+    let networkThrottling
 
     const throttling = settings.throttling;
 
     switch (settings.throttlingMethod) {
       case 'provided':
-        cpuThrottling = Util.i18n.strings.throttlingProvided;
-        networkThrottling = Util.i18n.strings.throttlingProvided;
-        break;
+        cpuThrottling = Util.i18n.strings.throttlingProvided
+        networkThrottling = Util.i18n.strings.throttlingProvided
+        break
       case 'devtools': {
-        const { cpuSlowdownMultiplier, requestLatencyMs } = throttling;
+        const { cpuSlowdownMultiplier, requestLatencyMs } = throttling
         cpuThrottling = `${Util.i18n.formatNumber(
           cpuSlowdownMultiplier
-        )}x slowdown (DevTools)`;
+        )}x slowdown (DevTools)`
         networkThrottling =
           `${Util.i18n.formatNumber(requestLatencyMs)}${NBSP}ms HTTP RTT, ` +
           `${Util.i18n.formatNumber(
@@ -460,37 +460,37 @@ class Util {
           `${Util.i18n.formatNumber(
             throttling.uploadThroughputKbps
           )}${NBSP}Kbps up (DevTools)`;
-        break;
+        break
       }
       case 'simulate': {
-        const { cpuSlowdownMultiplier, rttMs, throughputKbps } = throttling;
+        const { cpuSlowdownMultiplier, rttMs, throughputKbps } = throttling
         cpuThrottling = `${Util.i18n.formatNumber(
           cpuSlowdownMultiplier
-        )}x slowdown (Simulated)`;
+        )}x slowdown (Simulated)`
         networkThrottling =
           `${Util.i18n.formatNumber(rttMs)}${NBSP}ms TCP RTT, ` +
           `${Util.i18n.formatNumber(
             throughputKbps
-          )}${NBSP}Kbps throughput (Simulated)`;
-        break;
+          )}${NBSP}Kbps throughput (Simulated)`
+        break
       }
       default:
-        cpuThrottling = Util.i18n.strings.runtimeUnknown;
-        networkThrottling = Util.i18n.strings.runtimeUnknown;
+        cpuThrottling = Util.i18n.strings.runtimeUnknown
+        networkThrottling = Util.i18n.strings.runtimeUnknown
     }
 
-    let deviceEmulation = Util.i18n.strings.runtimeNoEmulation;
+    let deviceEmulation = Util.i18n.strings.runtimeNoEmulation
     if (settings.emulatedFormFactor === 'mobile') {
-      deviceEmulation = Util.i18n.strings.runtimeMobileEmulation;
+      deviceEmulation = Util.i18n.strings.runtimeMobileEmulation
     } else if (settings.emulatedFormFactor === 'desktop') {
-      deviceEmulation = Util.i18n.strings.runtimeDesktopEmulation;
+      deviceEmulation = Util.i18n.strings.runtimeDesktopEmulation
     }
 
     return {
       deviceEmulation,
       cpuThrottling,
       networkThrottling,
-    };
+    }
   }
 
   /**
@@ -504,48 +504,48 @@ class Util {
   static filterRelevantLines(lines, lineMessages, surroundingLineCount) {
     if (lineMessages.length === 0) {
       // no lines with messages, just return the first bunch of lines
-      return lines.slice(0, surroundingLineCount * 2 + 1);
+      return lines.slice(0, surroundingLineCount * 2 + 1)
     }
 
-    const minGapSize = 3;
-    const lineNumbersToKeep = new Set();
+    const minGapSize = 3
+    const lineNumbersToKeep = new Set()
     // Sort messages so we can check lineNumbersToKeep to see how big the gap to
     // the previous line is.
     lineMessages = lineMessages.sort(
       (a, b) => (a.lineNumber || 0) - (b.lineNumber || 0)
     );
     lineMessages.forEach(({ lineNumber }) => {
-      let firstSurroundingLineNumber = lineNumber - surroundingLineCount;
-      let lastSurroundingLineNumber = lineNumber + surroundingLineCount;
+      let firstSurroundingLineNumber = lineNumber - surroundingLineCount
+      let lastSurroundingLineNumber = lineNumber + surroundingLineCount
 
       while (firstSurroundingLineNumber < 1) {
         // make sure we still show (surroundingLineCount * 2 + 1) lines in total
-        firstSurroundingLineNumber++;
-        lastSurroundingLineNumber++;
+        firstSurroundingLineNumber++
+        lastSurroundingLineNumber++
       }
       // If only a few lines would be omitted normally then we prefer to include
       // extra lines to avoid the tiny gap
       if (lineNumbersToKeep.has(firstSurroundingLineNumber - minGapSize - 1)) {
-        firstSurroundingLineNumber -= minGapSize;
+        firstSurroundingLineNumber -= minGapSize
       }
       for (
         let i = firstSurroundingLineNumber;
         i <= lastSurroundingLineNumber;
         i++
       ) {
-        const surroundingLineNumber = i;
-        lineNumbersToKeep.add(surroundingLineNumber);
+        const surroundingLineNumber = i
+        lineNumbersToKeep.add(surroundingLineNumber)
       }
     });
 
-    return lines.filter((line) => lineNumbersToKeep.has(line.lineNumber));
+    return lines.filter((line) => lineNumbersToKeep.has(line.lineNumber))
   }
 
   /**
    * @param {string} categoryId
    */
   static isPluginCategory(categoryId) {
-    return categoryId.startsWith('lighthouse-plugin-');
+    return categoryId.startsWith('lighthouse-plugin-')
   }
 }
 
@@ -554,11 +554,11 @@ class Util {
  * through, we have this global.
  * @type {LH.ReportResult | null}
  */
-Util.reportJson = null;
+Util.reportJson = null
 
 /** @type {I18n} */
 // @ts-ignore: Is set in report renderer.
-Util.i18n = null;
+Util.i18n = null
 
 /**
  * Report-renderer-specific strings.
@@ -668,4 +668,4 @@ Util.UIStrings = {
   throttlingProvided: 'Provided by environment',
 };
 
-export default Util;
+export default Util

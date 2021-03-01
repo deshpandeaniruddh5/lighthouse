@@ -1,5 +1,4 @@
 import React from "react"
-import "./performance.css"
 import {useSelector} from "react-redux"
 import {CategoryHeader} from "./CategoryHeader"
 import {MetricsRenderer} from "./MetricsRenderer"

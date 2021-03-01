@@ -14,12 +14,14 @@ const renderAudit = (audit)=>{
                 <span class="lh-audit__title"><span>{DetailsRenderer.convertMarkdownCodeSnippets(audit.result.title)}</span></span>
                 <span class="lh-audit__display-text">{audit.result.displayValue}</span>
               </span>
-              <div class="lh-chevron-container"><svg class="lh-chevron" title="See audits" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+              <div class="lh-chevron-container">
+                <svg class="lh-chevron" title="See audits" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
                 <g class="lh-chevron__lines">
                 <path class="lh-chevron__line lh-chevron__line-left" d="M10 50h40"></path>
                 <path class="lh-chevron__line lh-chevron__line-right" d="M90 50H50"></path>
                 </g>
-              </svg></div>
+                </svg>
+              </div>
             </div>
             </summary>
             <div class="lh-audit__description"><span>{DetailsRenderer.convertMarkdownLinkSnippets(audit.result.description)}</span></div>
@@ -35,6 +37,7 @@ const renderAudit = (audit)=>{
 }
 const renderGroupAudits = (grouped,groups)=>{
     const failedAuditsGroups = []
+
     for (const [groupId, groupAuditRefs] of grouped){
         const failedAuditsGroup=groupAuditRefs.map((audit)=>renderAudit(audit))
         failedAuditsGroups.push(
@@ -47,6 +50,7 @@ const renderGroupAudits = (grouped,groups)=>{
             </div>
         )
     }
+
     return failedAuditsGroups
 }
 export const  RenderFailedClump = (props)=>{
@@ -62,11 +66,11 @@ export const  RenderFailedClump = (props)=>{
       groupAuditRefs.push(auditRef);
       grouped.set(groupId, groupAuditRefs);
     }
+
     const failedNoGroupAudits = grouped.get(notAGroup);
     grouped.delete(notAGroup);
-    const renderNoGroupAudits = failedNoGroupAudits.map((audit)=>(renderAudit(audit)))
-    
 
+    const renderNoGroupAudits = failedNoGroupAudits.map((audit)=>(renderAudit(audit)))
     
     return (
         <div className="lh-clump--failed">

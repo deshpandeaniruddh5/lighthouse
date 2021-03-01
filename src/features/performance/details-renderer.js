@@ -1,7 +1,6 @@
 import React from "react"
 
 import Util from "./utils"
-import CriticalRequestChainRenderer from './crc-details-renderer.js';
 
 /* globals self CriticalRequestChainRenderer SnippetRenderer Util URL */
 

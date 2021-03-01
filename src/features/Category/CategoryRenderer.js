@@ -25,30 +25,32 @@ function _getClumpIdForAuditRef(auditRef) {
   }
 export const CategoryRenderer = (props)=>{
 
-    const data = useSelector((state)=>state.data.lighthouseData);
-    const clone = (JSON.parse(JSON.stringify(data)));
+    const data = useSelector((state)=>state.data.lighthouseData)
+    const clone = (JSON.parse(JSON.stringify(data)))
+
     for (const category of Object.values(clone.categories)) {
         category.auditRefs.forEach((auditRef) => {
-          const result = clone.audits[auditRef.id];
-          auditRef.result = result;
-        });
+          const result = clone.audits[auditRef.id]
+          auditRef.result = result
+        })
     } 
 
-    const currentCategory=clone.categories[props.id].auditRefs;
-    const clumps = new Map();
-    clumps.set('failed', []);
-    clumps.set('warning', []);
-    clumps.set('manual', []);
-    clumps.set('passed', []);
-    clumps.set('notApplicable', []);
+    const currentCategory=clone.categories[props.id].auditRefs
+    const clumps = new Map()
+    clumps.set('failed', [])
+    clumps.set('warning', [])
+    clumps.set('manual', [])
+    clumps.set('passed', [])
+    clumps.set('notApplicable', [])
+     
     for (const auditRef of currentCategory) {
-        const clumpId =_getClumpIdForAuditRef(auditRef);
-        const clump = (clumps.get(clumpId)); 
-        clump.push(auditRef);
-        clumps.set(clumpId, clump);
+        const clumpId =_getClumpIdForAuditRef(auditRef)
+        const clump = (clumps.get(clumpId))
+        clump.push(auditRef)
+        clumps.set(clumpId, clump)
     }
-    const failed = clumps.get('failed'); 
-    clumps.delete('failed');
+    const failed = clumps.get('failed') 
+    clumps.delete('failed')
     
     return (
       <React.Fragment>

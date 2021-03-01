@@ -1,5 +1,5 @@
 
-const NBSP2 = '\xa0';
+const NBSP2 = '\xa0'
 
 class I18n {
   /**
@@ -8,15 +8,15 @@ class I18n {
    */
   constructor(locale, strings) {
     // When testing, use a locale with more exciting numeric formatting.
-    if (locale === 'en-XA') locale = 'de';
+    if (locale === 'en-XA') locale = 'de'
 
-    this._numberDateLocale = locale;
-    this._numberFormatter = new Intl.NumberFormat(locale);
+    this._numberDateLocale = locale
+    this._numberFormatter = new Intl.NumberFormat(locale)
     this._strings = /** @type {LH.I18NRendererStrings} */ (strings || {});
   }
 
   get strings() {
-    return this._strings;
+    return this._strings
   }
 
   /**
@@ -26,8 +26,8 @@ class I18n {
    * @return {string}
    */
   formatNumber(number, granularity = 0.1) {
-    const coarseValue = Math.round(number / granularity) * granularity;
-    return this._numberFormatter.format(coarseValue);
+    const coarseValue = Math.round(number / granularity) * granularity
+    return this._numberFormatter.format(coarseValue)
   }
 
   /**
@@ -60,8 +60,8 @@ class I18n {
    * @return {string}
    */
   formatMilliseconds(ms, granularity = 10) {
-    const coarseTime = Math.round(ms / granularity) * granularity;
-    return `${this._numberFormatter.format(coarseTime)}${NBSP2}ms`;
+    const coarseTime = Math.round(ms / granularity) * granularity
+    return `${this._numberFormatter.format(coarseTime)}${NBSP2}ms`
   }
 
   /**
@@ -70,8 +70,8 @@ class I18n {
    * @return {string}
    */
   formatSeconds(ms, granularity = 0.1) {
-    const coarseTime = Math.round(ms / 1000 / granularity) * granularity;
-    return `${this._numberFormatter.format(coarseTime)}${NBSP2}s`;
+    const coarseTime = Math.round(ms / 1000 / granularity) * granularity
+    return `${this._numberFormatter.format(coarseTime)}${NBSP2}s`
   }
 
   /**
@@ -89,16 +89,16 @@ class I18n {
       minute: 'numeric',
       timeZoneName: 'short',
     };
-    let formatter = new Intl.DateTimeFormat(this._numberDateLocale, options);
+    let formatter = new Intl.DateTimeFormat(this._numberDateLocale, options)
 
     // Force UTC if runtime timezone could not be detected.
     // See https://github.com/GoogleChrome/lighthouse/issues/1056
-    const tz = formatter.resolvedOptions().timeZone;
+    const tz = formatter.resolvedOptions().timeZone
     if (!tz || tz.toLowerCase() === 'etc/unknown') {
-      options.timeZone = 'UTC';
-      formatter = new Intl.DateTimeFormat(this._numberDateLocale, options);
+      options.timeZone = 'UTC'
+      formatter = new Intl.DateTimeFormat(this._numberDateLocale, options)
     }
-    return formatter.format(new Date(date));
+    return formatter.format(new Date(date))
   }
   /**
    * Converts a time in milliseconds into a duration string, i.e. `1d 2h 13m 52s`
@@ -106,9 +106,9 @@ class I18n {
    * @return {string}
    */
   formatDuration(timeInMilliseconds) {
-    let timeInSeconds = timeInMilliseconds / 1000;
+    let timeInSeconds = timeInMilliseconds / 1000
     if (Math.round(timeInSeconds) === 0) {
-      return 'None';
+      return 'None'
     }
 
     /** @type {Array<string>} */
@@ -122,12 +122,12 @@ class I18n {
 
     Object.keys(unitLabels).forEach((label) => {
       const unit = unitLabels[label];
-      const numberOfUnits = Math.floor(timeInSeconds / unit);
+      const numberOfUnits = Math.floor(timeInSeconds / unit)
       if (numberOfUnits > 0) {
-        timeInSeconds -= numberOfUnits * unit;
-        parts.push(`${numberOfUnits}\xa0${label}`);
+        timeInSeconds -= numberOfUnits * unit
+        parts.push(`${numberOfUnits}\xa0${label}`)
       }
-    });
+    })
 
     return parts.join(' ');
   }

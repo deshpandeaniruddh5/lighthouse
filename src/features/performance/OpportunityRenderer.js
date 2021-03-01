@@ -1,22 +1,22 @@
 
 import React from "react"
 import DetailsRenderer from "./details-renderer"
-function selectClass(score){
-    score=parseFloat(score);
+function selectClass( score ){
+    score=parseFloat( score );
     if(score < 0.5) return "lh-audit lh-audit--load-opportunity lh-audit--numeric lh-audit--fail"
     else return "lh-audit lh-audit--load-opportunity lh-audit--numeric lh-audit--average"
 }
-function getNumeric(value){
+function getNumeric( value ){
     value=(parseFloat(value)/1000).toFixed(2);
     return value;
 }
-function generateStyle(details,scale){
+function generateStyle( details,scale ){
     const sparklineWidthPct = `${(details.overallSavingsMs / scale) * 100}%`;
     return {width:sparklineWidthPct};
 }
 
 
-export const OpportunityRenderer = (props)=>{
+export const OpportunityRenderer = ( props )=>{
     if(!props.opportunityAudits.length)
     {
         return (
@@ -43,7 +43,8 @@ export const OpportunityRenderer = (props)=>{
                 <path class="lh-chevron__line lh-chevron__line-left" d="M10 50h40"></path>
                 <path class="lh-chevron__line lh-chevron__line-right" d="M90 50H50"></path>
                 </g>
-                </svg></div>
+                </svg>
+                </div>
               </div>
               
             </div>
