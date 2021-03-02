@@ -26,6 +26,23 @@ const _getPassingGroupIds = ( auditRefs )=>{
 
     return uniqueGroupIds;
   }
+  const loadStackpacks = ( audit ) => {
+    if( !audit.stackPacks ){
+      return null
+    }
+    const collection = []
+    audit.stackPacks.forEach((pack) => {
+      collection.push(
+        
+        <div className="lh-audit__stackpack">
+          <img className='lh-audit__stackpack__img' src={pack.iconDataURL} alt={pack.title}></img>
+          <span>{DetailsRenderer.convertMarkdownLinkSnippets(pack.description)}</span>
+        </div>
+        
+      )
+    })
+    return (<div className="lh-audit__stackpacks">{collection}</div>)
+  }
   const renderAudit = ( audit )=>{
     return(
       
@@ -47,6 +64,7 @@ const _getPassingGroupIds = ( auditRefs )=>{
             </div>
             </summary>
             <div class="lh-audit__description"><span>{DetailsRenderer.convertMarkdownLinkSnippets(audit.result.description)}</span></div>
+            {loadStackpacks(audit)}
             <table class="lh-table lh-details">
 
             <thead><tr>{DetailsRenderer.renderTableHeader(audit.result.details)}</tr></thead>

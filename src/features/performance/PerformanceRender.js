@@ -26,6 +26,7 @@ const renderAudit = ( audit )=>{
           </div>
           </summary>
           <div class="lh-audit__description"><span>{DetailsRenderer.convertMarkdownLinkSnippets(audit.result.description)}</span></div>
+          {loadStackpacks(audit)}
           <table class="lh-table lh-details">
 
             <thead><tr>{DetailsRenderer.renderTableHeader(audit.result.details)}</tr></thead>
@@ -36,7 +37,25 @@ const renderAudit = ( audit )=>{
           </div>
   )
 }
-
+const loadStackpacks = (audit) => {
+  if(!audit.stackPacks){
+    return 
+  }
+  const collection = []
+  audit.stackPacks.forEach((pack) => {
+    collection.push(
+      <div className="lh-audit__stackpack">
+        <img className='lh-audit__stackpack__img' src={pack.iconDataURL} alt={pack.title}></img>
+        {DetailsRenderer.convertMarkdownLinkSnippets(pack.description)}
+      </div>
+    )
+  })
+  return(
+    <div className="lh-audit__stackpacks">
+      {collection}
+    </div>
+  )
+}
 function _getWastedMs(audit){
     if ( audit.result.details && audit.result.details.type === 'opportunity' ) {
       const details = audit.result.details;
@@ -66,7 +85,7 @@ export const PerformanceRender = (props)=>{
         });
     } 
     console.log(clone)
-    const performanceCategory=clone.categories.performance.auditRefs;
+    const performanceCategory=Util.reportJson.categories.performance.auditRefs;
     //Metrics data
     const metrics=metricsgen(data);
     

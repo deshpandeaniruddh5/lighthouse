@@ -73,8 +73,8 @@ function App(){
     return(
       
     <React.Fragment>
-      <ReportViewer json={data}/>
       <div class="lh-container lh-root lh-vars lh-screenshot-overlay--enabled lh-narrow">  
+
       <div class="lh-container">
       <div class="lh-report">       
       <Lighthoseoverview categories={data.categories}/>
