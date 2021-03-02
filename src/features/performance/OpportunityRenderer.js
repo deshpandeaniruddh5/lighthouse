@@ -1,6 +1,23 @@
 
 import React from "react"
 import DetailsRenderer from "./details-renderer"
+const loadStackpacks = ( audit ) => {
+  if( !audit.stackPacks ){
+    return null
+  }
+  const collection = []
+  audit.stackPacks.forEach((pack) => {
+    collection.push(
+      
+      <div className="lh-audit__stackpack">
+        <img className='lh-audit__stackpack__img' src={pack.iconDataURL} alt={pack.title}></img>
+        <span>{DetailsRenderer.convertMarkdownLinkSnippets(pack.description)}</span>
+      </div>
+      
+    )
+  })
+  return (<div className="lh-audit__stackpacks">{collection}</div>)
+}
 function selectClass( score ){
     score=parseFloat( score );
     if(score < 0.5) return "lh-audit lh-audit--load-opportunity lh-audit--numeric lh-audit--fail"
@@ -28,6 +45,8 @@ export const OpportunityRenderer = ( props )=>{
         <details class="lh-expandable-details" open="">
         <summary>
           <div class="lh-audit__header lh-expandable-details__summary">
+          
+
             <div class="lh-load-opportunity__cols">
               <div class="lh-load-opportunity__col lh-load-opportunity__col--one">
                 <span class="lh-audit__score-icon"></span>
@@ -51,7 +70,7 @@ export const OpportunityRenderer = ( props )=>{
           </div>
         </summary>
         <div class="lh-audit__description"><span>{DetailsRenderer.convertMarkdownLinkSnippets(opportunity.result.description)}</span></div>
-        
+        {loadStackpacks( opportunity )}
         <table class="lh-table lh-details">
             <thead><tr>{DetailsRenderer.renderTableHeader(opportunity.result.details)}</tr></thead>
             <tbody>{DetailsRenderer.tablerender(opportunity.result.details)}</tbody>
