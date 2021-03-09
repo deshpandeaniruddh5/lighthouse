@@ -3,7 +3,7 @@ import Util from "../performance/utils"
 import DetailsRenderer from "../performance/details-renderer"
 
 const loadStackpacks = ( audit ) => {
-  if( !audit.stackPacks ){
+  if (!audit.stackPacks){
     return null
   }
   const collection = []
@@ -20,7 +20,7 @@ const loadStackpacks = ( audit ) => {
   return (<div className="lh-audit__stackpacks">{collection}</div>)
 }
 function _clumpTitles(clumpId) {
-    switch(clumpId){
+    switch (clumpId){
         case 'warning': 
             return Util.i18n.strings.warningAuditsGroupTitle
         case 'manual': 
@@ -33,24 +33,28 @@ function _clumpTitles(clumpId) {
   }
   const renderAudit = (audit)=>{
     return(
-            <div class={Util._setRatingClass(audit.result.score,audit.result.scoreDisplayMode)} id={audit.result.id}>
-            <details class="lh-expandable-details" open="">
+        <div class={Util._setRatingClass(audit.result.score,audit.result.scoreDisplayMode)} id={audit.result.id}>
+          <details class="lh-expandable-details" open="">
             <summary>
-            <div class="lh-audit__header lh-expandable-details__summary">
-              <span class="lh-audit__score-icon"></span>
-              <span class="lh-audit__title-and-text">
-                <span class="lh-audit__title"><span>{DetailsRenderer.convertMarkdownCodeSnippets(audit.result.title)}</span></span>
-                <span class="lh-audit__display-text">{audit.result.displayValue}</span>
-              </span>
-              <div class="lh-chevron-container"><svg class="lh-chevron" title="See audits" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                <g class="lh-chevron__lines">
-                <path class="lh-chevron__line lh-chevron__line-left" d="M10 50h40"></path>
-                <path class="lh-chevron__line lh-chevron__line-right" d="M90 50H50"></path>
-                </g>
-              </svg></div>
-            </div>
+              <div class="lh-audit__header lh-expandable-details__summary">
+                <span class="lh-audit__score-icon"></span>
+                <span class="lh-audit__title-and-text">
+                  <span class="lh-audit__title"><span>{DetailsRenderer.convertMarkdownCodeSnippets(audit.result.title)}</span></span>
+                  <span class="lh-audit__display-text">{audit.result.displayValue}</span>
+                </span>
+                <div class="lh-chevron-container">
+                  <svg class="lh-chevron" title="See audits" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                    <g class="lh-chevron__lines">
+                      <path class="lh-chevron__line lh-chevron__line-left" d="M10 50h40"></path>
+                      <path class="lh-chevron__line lh-chevron__line-right" d="M90 50H50"></path>
+                    </g>
+                  </svg>
+                </div>
+              </div>
             </summary>
-            <div class="lh-audit__description"><span>{DetailsRenderer.convertMarkdownLinkSnippets(audit.result.description)}</span></div>
+            <div class="lh-audit__description">
+              <span>{DetailsRenderer.convertMarkdownLinkSnippets(audit.result.description)}</span>
+            </div>
             {loadStackpacks(audit)}
             <table class="lh-table lh-details">
 
@@ -58,8 +62,8 @@ function _clumpTitles(clumpId) {
             <tbody>{DetailsRenderer.tablerender(audit.result.details)}</tbody>
             
             </table>
-            </details>
-            </div>
+          </details>
+        </div>
     )
 }
 const renderDescription = (description,clumpId) =>{
@@ -78,31 +82,33 @@ const renderGroupAudits = ( clumps,description )=>{
 
         auditsGroups.push(
             <details className={Class} open="">
-            <summary>   
-            <div className="lh-audit-group__summary">    
-            <div class="lh-audit-group__header">
-            <span class="lh-audit-group__title">{title}</span>
-            <span class="lh-audit-group__itemcount">({groupAuditRefs.length})</span>
-            {renderDescription(description,clumpId)}
-            </div>
-            </div>
-            </summary>
-            {renderedAudits}
+              <summary>   
+                <div className="lh-audit-group__summary">    
+                  <div class="lh-audit-group__header">
+                    <span class="lh-audit-group__title">{title}</span>
+                    <span class="lh-audit-group__itemcount">({groupAuditRefs.length})</span>
+                    {renderDescription(description,clumpId)}
+                  </div>
+                </div>
+              </summary>
+              {renderedAudits}
             </details>
         )
     }
 
     return auditsGroups
 }  
-export const RenderOtherClumps = (props) =>{  
+export class RenderOtherClumps extends React.Component{ 
+  render(){   
     const clumps = new Map()
 
-    for(const [clumpId, groupAuditRefs] of props.clumps){
+    for(const [clumpId, groupAuditRefs] of this.props.clumps){
         if(groupAuditRefs.length===0){
             continue;
         }
         clumps.set(clumpId,groupAuditRefs)
     }
     
-    return (renderGroupAudits(clumps,props.description))
+    return (renderGroupAudits(clumps,this.props.description))
+  }  
 }

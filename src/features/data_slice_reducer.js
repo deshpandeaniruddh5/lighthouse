@@ -4,12 +4,12 @@ const initialState = {
   lighthouseData : null,
   status : "idle",
   error : null,
-};
+}
 
 export const fetchData  = createAsyncThunk("data/fetchData",async()=>{
-    const response = await fetch('http://localhost:8000/');
-    const result= await response.json();
-    return result;
+    const response = await fetch('http://localhost:8000/')
+    const result= await response.json()
+    return result
 })
 
 const dataSlice = createSlice({

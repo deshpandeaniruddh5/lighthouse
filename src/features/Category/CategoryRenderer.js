@@ -23,19 +23,10 @@ function _getClumpIdForAuditRef(auditRef) {
       return 'failed';
     }
   }
-export const CategoryRenderer = (props)=>{
+export class CategoryRenderer extends React.Component{
+  render(){
 
-    const data = useSelector((state)=>state.data.lighthouseData)
-    const clone = (JSON.parse(JSON.stringify(data)))
-
-    for (const category of Object.values(clone.categories)) {
-        category.auditRefs.forEach((auditRef) => {
-          const result = clone.audits[auditRef.id]
-          auditRef.result = result
-        })
-    } 
-
-    const currentCategory=clone.categories[props.id].auditRefs
+    const currentCategory=this.props.data.auditRefs
     const clumps = new Map()
     clumps.set('failed', [])
     clumps.set('warning', [])
@@ -57,12 +48,12 @@ export const CategoryRenderer = (props)=>{
       
         <div class="lh-category-wrapper">
         <div class="lh-category">
-        <CategoryHeader category={data.categories[props.id]}/>
-
-        <RenderFailedClump auditRefs={failed} groups={clone.categoryGroups}/>
-        <RenderOtherClumps clumps = {clumps} groups = {clone.categoryGroups} description={clone.categories[props.id].manualDescription}/>
+        <CategoryHeader category={this.props.data}/>
+        <RenderFailedClump auditRefs={failed} groups={this.props.categoryGroups}/>
+        <RenderOtherClumps clumps = {clumps} groups = {this.props.categoryGroups} description={this.props.data.manualDescription}/>
         </div>    
         </div>
         </React.Fragment>  
     )
+  }   
 }
